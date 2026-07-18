@@ -38,5 +38,4 @@ All notable changes to this project will be documented here. Format follows
 - Pin each verified recording to one SQLite snapshot so concurrent file changes cannot bypass chain verification.
 - Normalize local settings and cap frame counts, dimensions, durations, blobs, coordinates, and decoded image size before materialization.
 
-[0.2.0]: https://github.com/mr-gl00m/stutterbox/compare/v0.1.0...v0.2.0
-[Unreleased]: https://github.com/mr-gl00m/stutterbox/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/mr-gl00m/stutterbox/releases/tag/v0.2.0

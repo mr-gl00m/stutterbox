@@ -3,7 +3,7 @@
 A local screen recorder that jumps by change and turns redacted sessions into reports.
 
 <p align="center">
-  <img src="https://github.com/mr-gl00m/stutterbox/blob/main/resources/icons/stutterbox.png" alt="Stutterbox icon" width="140">
+  <img src="resources/icons/stutterbox.png" alt="Stutterbox icon" width="140">
 </p>
 
 ```text
@@ -30,7 +30,7 @@ Stutterbox v0.1.0 shipped on June 2, 2026 with local recording, change-event pla
 - Release hardening around hostile recordings, disk exhaustion, concurrent mutation, capture shutdown, local settings, and overwrite approval.
 - A tested Windows x64 package and the bundled 507-event sample path for judges.
 
-The public [`v0.1.0...main` comparison](https://github.com/mr-gl00m/stutterbox/compare/v0.1.0...main) preserves the complete timestamped history. The core report work is anchored by commits `ff41406` and `87a57d6`; it remains separate from the June release.
+The public repository is a reviewed snapshot rather than a live mirror; the complete timestamped development history is retained locally. The core report work remains separate from the June release.
 
 ## Quickstart
 
@@ -107,6 +107,14 @@ These are structural omissions, not administrator settings. MIT permits forks to
 - No automatic content detection. Redaction is spatial and user-directed.
 - No claim that a generated report can recover actions hidden between sampled frames.
 
+## License
+
+[MIT](LICENSE), Copyright (c) 2026 Cid.
+
+## Contributing
+
+Personal project, shared as-is. Issues and PRs are welcome with slow, opinionated review. More work lives under [mr-gl00m](https://github.com/mr-gl00m).
+
 ## Support
 
 If my work is interesting or useful to you, consider tossing something my way; it goes toward rent, food, and energy drinks, and every bit is genuinely appreciated.
@@ -118,11 +126,3 @@ If my work is interesting or useful to you, consider tossing something my way; i
 - BTC: ```bc1qnedeq3dr2dmlwgmw2mr5mtpxh45uhl395prr0d```
 - ETH: ```0x1bCbBa9854dA4Fc1Cb95997D5f42006055282e3c```
 - SOL: ```3Wm8wS93UpG2CrZsMWHSspJh7M5gQ6NXBbgLHDFXmAdQ```
-
-## License
-
-[MIT](LICENSE), Copyright (c) 2026 Cid.
-
-## Contributing
-
-Personal project, shared as-is. Issues and PRs are welcome with slow, opinionated review. More work lives under [mr-gl00m](https://github.com/mr-gl00m).
