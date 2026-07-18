@@ -3,7 +3,7 @@
 A local screen recorder that jumps by change and turns redacted sessions into reports.
 
 <p align="center">
-  <img src=".photos/stutterbox.png" alt="Stutterbox icon" width="140">
+  <img src="https://github.com/mr-gl00m/stutterbox/blob/main/resources/icons/stutterbox.png" alt="Stutterbox icon" width="140">
 </p>
 
 ```text
