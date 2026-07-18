@@ -24,7 +24,7 @@ The product position is deliberate: Stutterbox refuses stealth capture, hidden a
 
 ## Required artifact checklist
 
-- [x] Public repository contains the full local history and MIT license.
+- [x] Public repository contains the reviewed source snapshot and MIT license.
 - [x] Third-party runtime components and license terms are documented and bundled with the Windows build.
 - [ ] Public YouTube demo is below three minutes and linked in Devpost.
 - [ ] `/feedback` Session ID confirmed against the candidate above.
@@ -34,12 +34,14 @@ The product position is deliberate: Stutterbox refuses stealth capture, hidden a
 
 ## Evidence after July 13
 
-- `eef99a2` through `d30005c`: same-day recording safety and untrusted-input hardening.
-- `ff41406`: redacted GPT-5.6 report pipeline plus deterministic regression tests.
-- `87a57d6`: opt-in PySide6 report workspace and local API key setting.
-- This documentation and release commit follows as a separate history entry.
+Public evidence: the repository upload, release publication, and asset timestamps all fall inside the July 13 to 21 window on GitHub's server-side clock.
 
-Keep these commits intact on the public default branch. Do not squash the Build Week work.
+Local history reference (not visible on the public snapshot):
+
+- `e2a6f85` through `9831a42`: same-day recording safety and untrusted-input hardening.
+- `0a2f3e4`: redacted GPT-5.6 report pipeline plus deterministic regression tests.
+- `e1da13e`: opt-in PySide6 report workspace and local API key setting.
+- This documentation and release commit follows as a separate history entry.
 
 ## Judge-facing assets
 
@@ -53,7 +55,7 @@ Use the app icon as the thumbnail. Favor interface evidence over a decorative ba
 
 ## Judging case
 
-- **Technological implementation:** Codex-assisted development is visible in the preserved commit sequence, regression tests, strict typing, hostile-input boundaries, and the complete GPT-5.6 feature path.
+- **Technological implementation:** Codex-assisted development shows in the regression tests, strict typing, hostile-input boundaries, and the complete GPT-5.6 feature path in the public source.
 - **Design:** one desktop workflow covers selection, local redaction, explicit approval, generation, rendered output, copy, and visible error states.
 - **Potential impact:** bug reports and work-session summaries become reproducible artifacts without uploading a continuous screen recording.
 - **Quality of the idea:** change-event storage and an upstream refusal to support bossware give the recorder a specific technical and product identity.
@@ -94,11 +96,11 @@ Keep unrelated brand marks, notifications, account names, secrets, and browser c
 - [ ] Run the live acceptance pass once with an approved API key.
 - [ ] Commit a scrubbed generated sample report if it adds value.
 - [x] Build the v0.2.0 Windows package and run its smoke check.
-- [x] Push the full post-July-13 history to public `main`.
+- [x] Upload the reviewed source snapshot to public `main`.
 - [ ] Confirm the `/feedback` Session ID from the primary build thread.
 - [ ] Capture the two judge-facing gallery stills and upload `.photos/stutterbox.png` as the thumbnail.
 - [ ] Download the published Windows ZIP into a clean folder and repeat the sample workflow.
-- [ ] Push the v0.2.0 tag after the live GPT-5.6 acceptance call.
+- [ ] Recreate the `v0.2.0` tag and release through the web UI.
 - [ ] Publish the GitHub Release with notes, Windows ZIP, source archive, and SHA256 checksums.
 - [ ] Add the public YouTube URL here and to the README if useful.
 - [ ] Swap Stutterbox into GitHub profile pin slot 6.
