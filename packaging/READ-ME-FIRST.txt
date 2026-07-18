@@ -1,0 +1,39 @@
+Stutterbox 0.2.0
+================
+
+A local, tamper-evident screen recorder that stores only the parts of the
+screen that changed, then lets you scrub a session by change-event instead of
+by seconds. Optional GPT-5.6 reports turn a redacted event range into Markdown.
+
+To run
+------
+Double-click Stutterbox.exe. No Python or install needed.
+
+On first launch Windows may show a SmartScreen prompt, because this build is not
+yet code-signed: click "More info" then "Run anyway". This goes away once the
+build is signed.
+
+Try it in one minute
+--------------------
+A sample recording ships beside the exe: sample_coding_session.stut.
+In the app, choose Open, pick that file, then step through it with
+Next change. It is a synthetic 3-minute coding session: 507 change events
+in a 272 KiB file. The same session stored as raw frames is 1.85 GiB.
+
+To generate a report, mark any regions with Redact, choose Generate report,
+select the event range, add an OpenAI API key, and approve that request. The
+capture path stays offline. Only the selected frames enter the report path,
+and Stutterbox applies every marked redaction before image encoding.
+
+Where your data lives
+---------------------
+Recordings and settings:  %USERPROFILE%\.proj_stutterbox\
+Logs:                     %USERPROFILE%\.proj_stutterbox\logs\
+
+Nothing is written beside the app, so it can run from Program Files or any
+read-only location. There is no account system, telemetry, or background sync.
+
+Licenses
+--------
+Stutterbox is MIT licensed. See LICENSE.txt for the project license and
+THIRD_PARTY_NOTICES.md plus LICENSES\ for bundled runtime components.

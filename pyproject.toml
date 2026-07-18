@@ -1,0 +1,45 @@
+[project]
+name = "stutterbox"
+version = "0.2.0"
+description = "Local screen recorder that stores only changed regions and scrubs by change-event."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Cid" }]
+dependencies = [
+    "PySide6>=6.6",
+    "mss>=9.0",
+    "numpy>=1.26",
+    "Pillow>=10.0",
+]
+
+[project.scripts]
+stutterbox = "main:main"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "mypy>=1.8",
+    "pyinstaller>=6.0",
+]
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+warn_unused_configs = true
+files = ["core", "ui", "main.py", "tests"]
+
+[[tool.mypy.overrides]]
+module = ["mss", "mss.*", "PySide6", "PySide6.*"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["core", "ui"]

@@ -1,0 +1,170 @@
+Stutterbox — Implementation Checklist (hardened for unattended execution)
+
+Legend:
+  [x] done & verified in code   [ ] open / unverified   [—] N/A with justification
+  → depends on    🛑 stop-and-ask (see ESCALATION)    ⚠ made explicit (was hidden)
+Acceptance criterion (AC) on the line below each item — the checkable "done".
+
+Defaults are named so a cold run needs no human input:
+  interval_ms=250  diff_threshold=12  tile_size=48  accent=#ffb454
+  caps: MAX_REGION_PIXELS=64M  MAX_BLOB_BYTES=64MiB  MAX_DIMENSION=32768
+
+--------------------------------------------------------------------------------
+SUBSTRATE — build/confirm first; unblocks everything
+[x] core io/paths/config/errors/model/codec/hashchain/logging present & imported
+    AC: `uv run pytest` collects; `mypy --strict` clean.
+
+KEYSTONE — freeze before any feature; most-blocking node (8 items sit on it)
+[x] Container schema + RecordingWriter frozen   → substrate
+    AC: migrations/001 applies; frames/meta columns match core/container.py;
+        SCHEMA_VERSION=1.  🛑 any later schema/column/version change.
+[x] ⚠ Writer links every frame into a prev_hash chain from genesis  (was implicit)
+    AC: append_frame sets prev_hash + frame_sha256; verify_chain() passes on output.
+    Note: the checklist only listed "verify on open" (P3.3); the write side was
+    hidden. Verify-on-open is meaningless without this — kept explicit.
+
+--------------------------------------------------------------------------------
+Phase 0: scaffold — empty PySide6 app, dark theme, atomic settings
+[x] Runnable main.py: dark window, accent #ffb454
+    AC: `uv run python main.py` launches; dark bg + amber accent render; no
+        traceback in logs/stutterbox.log.
+[x] ~/.proj_stutterbox/settings.json created via atomic write
+    AC: created on first run via core/io.atomic_write_json; mid-write kill never
+        leaves a partial/corrupt file.
+[x] Rotating-handler logging wired to logs/stutterbox.log
+    AC: a line lands; handler is RotatingFileHandler 5MB x 3; an uncaught
+        exception is captured via sys.excepthook (assert in a test).
+
+--------------------------------------------------------------------------------
+Phase 1: capture and perceptual-diff core — small recording from changed regions
+[x] Capture loop grabbing the screen at interval_ms into a temp container  → keystone
+    AC: with a scripted GrabFn, frame timestamps track start + k*interval within
+        the tolerance asserted by tests/test_recorder_pacing.py; no burst-grab
+        after a slow tick. (Regression of fix 722c127 — keep the test green.)
+[x] ⚠ Capture path applies an exclusion hook before diff/storage  (pulled fwd from P3.2)
+    AC: ScreenCapturer.blank_regions zeroes excluded areas on every grab, so an
+        excluded region never produces a stored delta.
+[x] Perceptual diff: bounded changed-region boxes (threshold=12, tile=48)
+    AC: two disjoint changes -> exactly two boxes, each clamped to frame bounds;
+        identical frames -> []. "Bounded" = one box per 8-connected changed-tile
+        cluster, clamped (core/diff.py:changed_regions).
+[x] Finalized .stut recording on clean stop   → capture loop, keystone
+    AC: clean stop yields a single file at final_path; temp container gone;
+        crash-before-stop leaves NO .stut (recorder.py BaseException unlinks temp).
+[x] Size-comparison tool — baseline = uncompressed W*H*3 per tick (NOT a codec)
+    AC: samples/generate_sample.py reproduces SIZE_COMPARISON.md byte counts
+        exactly; the doc states the baseline is uncompressed raw, not H.264.
+[x] Record measured size win   → size-comparison tool, finalized .stut
+    AC: ratio <= stated target. If the target is missed (e.g. high-motion or a
+        too-low threshold blows up box count), the "win" is NOT claimed — abort,
+        do not soften the baseline. (Same measurement as P4.3 — build once.)
+
+--------------------------------------------------------------------------------
+Phase 2: player and change-event scrubber — jump to a change (SHIP criterion)
+[x] Open a .stut file   → keystone
+    AC: the committed sample opens; a non-SQLite file and a schema-version
+        mismatch each raise CorruptRecordingError with a visible reason.
+[x] Reconstruct any full frame from keyframe plus deltas
+    AC: every valid event index -> (H,W,3) frame; reconstruct(last) is
+        pixel-identical to the known final frame; out-of-range index -> IndexError.
+[x] Timeline showing change events rather than uniform seconds
+    AC: marker count == len(reader.events); markers positioned by ts_ms.
+[x] Next change / previous change navigation lands on the moment of change  ← SHIP
+    AC: from event k, "Next change" selects k+1 and shows reconstruct(k+1);
+        "Previous" selects k-1; at the ends the buttons no-op/disable.
+        MUST be a passing UI/integration test, not a manual claim.
+
+--------------------------------------------------------------------------------
+Phase 3: hardening and privacy — safe load, no leaks on export
+Container validation (was one checkbox; split into four testable guards):
+[x]   (a) reject non-SQLite / malformed
+      AC: truncated/garbage file -> "not a SQLite recording container".
+[x]   (b) reject oversized blob / region / dimension
+      AC: blob > MAX_BLOB_BYTES, region > MAX_REGION_PIXELS, or dim > MAX_DIMENSION
+          each raises (assert each cap fires).
+[x]   (c) reject decompression bomb BEFORE materialization
+      AC: decode_region checks declared header dims vs MAX_REGION_PIXELS before
+          convert("RGB")/np.array — verified in core/codec.py. Assert with a blob
+          declaring absurd dims.
+[—]   (d) path traversal — N/A for schema v1: the frames/meta tables carry no
+          path/filename field, so there is nothing to traverse.  🛑 confirm before
+          marking, and 🛑 if any future schema adds a path-bearing field.
+[x] Region-exclude so chosen screen areas are never captured   → exclusion hook (P1)
+    AC: with an exclusion region set, no stored box intersects it and reconstructed
+        pixels there are blank (property test over a synthetic capture).
+[x] Per-frame prev_hash chain verified on open   → keystone write-side
+    AC: verify_chain() passes on the sample; flipping one stored blob byte makes it
+        raise, naming the first broken frame.
+Export with redaction (split from one checkbox):
+[x]   Redaction rewrite (headless, tested)
+      AC: export_recording with a redaction box zeroes those pixels in the output,
+          gives the copy a fresh valid chain (verify_chain passes), and os.replaces
+          atomically. Coverage is SPATIAL-ONLY — no content detection.
+[x]   Export dialog with explicit confirm
+      AC: UI refuses to write without an explicit confirm.  🛑 every export — human
+          confirms the boxes cover the secret; 🛑 if dst path already exists
+          (os.replace overwrites silently).
+
+--------------------------------------------------------------------------------
+Phase 4: ship — documented and tagged with a sample artifact
+[x] README.md written via github-readme skill   → all features
+    AC: README exists and quickstart commands run as written.
+[x] Committed sample .stut plus size-versus-raw comparison   → recorder, size tool
+    AC: sample_coding_session.stut + SIZE_COMPARISON.md committed; sample opens in
+        the app and verify_chain passes. (Sample is synthetic by design.)
+[x] v0.1.0 tag on local repo   → all of the above committed
+    AC: `git tag` shows v0.1.0 on the intended commit.  🛑 before tagging: confirm
+        the frozen v0.1 surface (.stut schema, settings format, CLI) and a CLEAN
+        tree — do not tag over the uncommitted heatmap/exclude WIP.
+
+--------------------------------------------------------------------------------
+SHIP CRITERION: open a recording and jump to the moment a change appeared, tiny file
+[x] Automated synthetic E2E: record -> open -> jump, green in CI
+    AC: synthetic generator + tools/_verify_real_capture.py + tests pass; a
+        zero-event recording counts as FAIL, not a pass.
+[ ] Human: real multi-minute capture opens and jumps to a known change   🛑
+    AC: cannot be self-verified by an autonomous run (needs a live display with
+        real motion; the committed sample is synthetic). ESCALATE — a black/static
+        frame is not a pass. This was previously over-claimed as [x] on synthetic
+        evidence; corrected here.
+    Runbook: .docs/real_display_verification.md (ten minutes; paste the harness
+        output into its Evidence block, then flip this to [x]).
+
+--------------------------------------------------------------------------------
+OUT OF SCOPE for v0.1 (scope discipline — defer/cut, do not delete silently)
+( ) Activity heatmap (core/activity.py, ui/heatmap.py, commit acfc4d9) — not in the
+    original plan or PROJ_DOC. Post-plan creep; carries most of the uncommitted UI
+    churn. Cut from v0.1 or move to a post-ship list before tagging.
+( ) Drag-select exclude UI polish (commit 9a5546b) — the invariant (excluded pixels
+    never stored) is in scope; the screenshot drag-select interaction is richer than
+    P3.2 requires. Defer the polish.
+( ) Ed25519 signature over the manifest — charter-deferred to public release. Stays cut.
+( ) "Copy share snippet" secondary action — defer unless free.
+
+--------------------------------------------------------------------------------
+ESCALATION POINTS (where a wrong guess is expensive or hard to reverse)
+- Schema / migration change: any frames/meta column edit or SCHEMA_VERSION bump.
+  Surface the diff, the migration, and whether the committed sample .stut still opens.
+- Path-traversal guard (3d): if implementing it finds nothing to guard, confirm N/A
+  rather than inventing a path field.
+- Export with redactions: every shareable write. Surface the boxes, the
+  redacted_regions hit count, and that coverage is spatial-only.
+- Overwrite on write/export: final_path or dst exists (os.replace overwrites). Confirm.
+- v0.1.0 tag: about to freeze public surface. Confirm what's frozen + clean tree.
+- Real-session verification: headless / no on-screen motion. Hand back to a human.
+
+--------------------------------------------------------------------------------
+Phase 5: Build Week report path, v0.2.0
+[x] Inclusive session or event-range selection
+[x] Timestamped, evenly spaced change-event frame extraction
+[x] Redaction before PNG and Base64 serialization
+[x] GPT-5.6 Responses API request with bounded output and timeout
+[x] API key stored outside the repository
+[x] Explicit approval for every frame upload
+[x] Rendered Markdown report with copy button
+[x] Deterministic extraction, prompt, redaction-order, and response tests
+[x] Bundled 507-event sample prepares eight frames in 0.21 seconds
+[ ] Live GPT-5.6 acceptance call with approved key
+[ ] Public demo video below three minutes
+[ ] Public repository push with unsquashed post-July-13 history
+[ ] Devpost submission before Tuesday, July 21 at 5:00 PM PT

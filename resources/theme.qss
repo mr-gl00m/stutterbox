@@ -1,0 +1,132 @@
+QWidget {
+    background-color: #16171a;
+    color: #d6d8dc;
+    font-family: "Segoe UI", "Inter", sans-serif;
+    font-size: 10pt;
+}
+
+QMainWindow, QDialog {
+    background-color: #16171a;
+}
+
+QLabel {
+    background-color: transparent;
+}
+
+QLabel#HeadingLabel {
+    color: {ACCENT};
+    font-size: 11pt;
+    font-weight: 600;
+}
+
+QLabel#MonoLabel {
+    font-family: "Cascadia Mono", "Consolas", monospace;
+    color: #9aa0a6;
+}
+
+QPlainTextEdit, QTextEdit, QTextBrowser, QListWidget, QTreeWidget {
+    background-color: #101113;
+    color: #d6d8dc;
+    border: 1px solid #2a2c31;
+    selection-background-color: {ACCENT};
+    selection-color: #101113;
+    padding: 4px;
+}
+
+QToolBar {
+    background-color: #121316;
+    border-bottom: 1px solid #2a2c31;
+    spacing: 4px;
+    padding: 4px;
+}
+
+QToolButton, QPushButton {
+    background-color: #22242a;
+    color: #d6d8dc;
+    border: 1px solid #2a2c31;
+    padding: 6px 12px;
+    border-radius: 2px;
+}
+
+QToolButton:hover, QPushButton:hover {
+    border: 1px solid {ACCENT};
+    color: {ACCENT};
+}
+
+QToolButton:pressed, QPushButton:pressed {
+    background-color: {ACCENT};
+    color: #101113;
+}
+
+QToolButton:disabled, QPushButton:disabled {
+    color: #5b5f66;
+    border: 1px solid #232428;
+}
+
+QPushButton#RecordButton {
+    font-weight: 600;
+}
+
+QPushButton#RecordButton:checked {
+    background-color: {ACCENT};
+    color: #101113;
+    border: 1px solid {ACCENT};
+}
+
+QStatusBar {
+    background-color: #121316;
+    color: #8b9096;
+    border-top: 1px solid #2a2c31;
+}
+
+QSplitter::handle {
+    background-color: #2a2c31;
+}
+
+QSplitter::handle:hover {
+    background-color: {ACCENT};
+}
+
+QScrollBar:vertical, QScrollBar:horizontal {
+    background-color: #101113;
+    border: none;
+}
+
+QScrollBar::handle {
+    background-color: #2a2c31;
+    border-radius: 2px;
+}
+
+QScrollBar::handle:hover {
+    background-color: {ACCENT};
+}
+
+QSlider::groove:horizontal {
+    height: 4px;
+    background: #2a2c31;
+    border-radius: 2px;
+}
+
+QSlider::handle:horizontal {
+    background: {ACCENT};
+    width: 12px;
+    margin: -6px 0;
+    border-radius: 6px;
+}
+
+QSpinBox, QComboBox {
+    background-color: #101113;
+    border: 1px solid #2a2c31;
+    padding: 3px 6px;
+    border-radius: 2px;
+}
+
+QComboBox::drop-down {
+    border: none;
+}
+
+QComboBox QAbstractItemView {
+    background-color: #101113;
+    selection-background-color: {ACCENT};
+    selection-color: #101113;
+}
